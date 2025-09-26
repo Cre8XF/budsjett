@@ -134,6 +134,13 @@ export const useFinanceData = () => {
     const avgMonthlyExpenses = totalExpenses;
     const monthlySavings = avgMonthlyIncome - avgMonthlyExpenses;
 
+     const resetData = useCallback(() => {
+  localStorage.removeItem(STORAGE_KEY);
+  setTransactions([]);
+  setBudgets([]);
+  setSavingsGoals([]);
+}, []);
+
     return {
       sixMonths: monthlySavings * 6,
       oneYear: monthlySavings * 12
