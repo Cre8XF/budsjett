@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Target, Plus, Calendar, DollarSign } from 'lucide-react';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
+import { formatCurrency } from '../utils/format';
 
 export const SavingsGoals: React.FC = () => {
-  const { savingsGoals, addSavingsGoal, updateSavingsGoal } = useFinanceData();
+  const { savingsGoals, addSavingsGoal, updateSavingsGoal } = useFinance();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGoal, setNewGoal] = useState({
     name: '',
@@ -11,17 +12,8 @@ export const SavingsGoals: React.FC = () => {
     deadline: '',
     category: ''
   });
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('no-NO', {
-      style: 'currency',
-      currency: 'NOK'
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('no-NO');
-  };
+  // Controlled contribution amount per goal (keyed by goal ID)
+  const [contributionAmounts, setContributionAmounts] = useState<Record<string, string>>({});
 
   const getDaysRemaining = (deadline: string) => {
     const today = new Date();
@@ -42,8 +34,12 @@ export const SavingsGoals: React.FC = () => {
     }
   };
 
-  const handleContribute = (goalId: string, amount: number) => {
-    updateSavingsGoal(goalId, amount);
+  const handleContribute = (goalId: string) => {
+    const amount = Number(contributionAmounts[goalId] || 0);
+    if (amount > 0) {
+      updateSavingsGoal(goalId, amount);
+      setContributionAmounts(prev => ({ ...prev, [goalId]: '' }));
+    }
   };
 
   return (
@@ -111,7 +107,7 @@ export const SavingsGoals: React.FC = () => {
         {savingsGoals.map((goal) => {
           const percentage = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100);
           const daysRemaining = getDaysRemaining(goal.deadline);
-          
+
           return (
             <div key={goal.id} className="border border-gray-100 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
@@ -121,7 +117,7 @@ export const SavingsGoals: React.FC = () => {
                 </div>
                 <Target className="w-5 h-5 text-blue-500" />
               </div>
-              
+
               <div className="mb-3">
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
                   <span>{formatCurrency(goal.currentAmount)}</span>
@@ -146,26 +142,17 @@ export const SavingsGoals: React.FC = () => {
                 <input
                   type="number"
                   placeholder="Beløp å spare"
-                  className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  onKeyPress={(e) => {
+                  value={contributionAmounts[goal.id] || ''}
+                  onChange={(e) => setContributionAmounts(prev => ({ ...prev, [goal.id]: e.target.value }))}
+                  onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      const amount = Number((e.target as HTMLInputElement).value);
-                      if (amount > 0) {
-                        handleContribute(goal.id, amount);
-                        (e.target as HTMLInputElement).value = '';
-                      }
+                      handleContribute(goal.id);
                     }
                   }}
+                  className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
-                  onClick={() => {
-                    const input = document.querySelector(`input[placeholder="Beløp å spare"]`) as HTMLInputElement;
-                    const amount = Number(input?.value || 0);
-                    if (amount > 0) {
-                      handleContribute(goal.id, amount);
-                      input.value = '';
-                    }
-                  }}
+                  onClick={() => handleContribute(goal.id)}
                   className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
                 >
                   <DollarSign className="w-4 h-4" />

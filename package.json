@@ -1,5 +1,5 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "spareplanlegger",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
     "chart.js": "^4.5.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.344.0",

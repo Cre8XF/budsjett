@@ -1,19 +1,13 @@
 import React from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Clock } from 'lucide-react';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
+import { formatCurrency } from '../utils/format';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 
 export const RecentTransactions: React.FC = () => {
-  const { transactions } = useFinanceData();
+  const { transactions } = useFinance();
   const recentTransactions = transactions.slice(0, 5);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('no-NO', {
-      style: 'currency',
-      currency: 'NOK'
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     try {

@@ -9,12 +9,12 @@ import {
   BarElement,
 } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 export const ExpenseChart: React.FC = () => {
-  const { expensesByCategory } = useFinanceData();
+  const { expensesByCategory } = useFinance();
 
   const colors = [
     '#EF4444', // Red
@@ -71,7 +71,7 @@ export const ExpenseChart: React.FC = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: string | number) {
             return new Intl.NumberFormat('no-NO', {
               style: 'currency',
               currency: 'NOK',

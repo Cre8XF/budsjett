@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Plus, Upload } from 'lucide-react';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
 import { CATEGORIES } from '../types';
 
 export const TransactionForm: React.FC = () => {
-  const { addTransaction } = useFinanceData();
+  const { addTransaction } = useFinance();
   const [formData, setFormData] = useState({
     amount: '',
     category: '',
@@ -40,8 +40,7 @@ export const TransactionForm: React.FC = () => {
       reader.onload = (event) => {
         const csv = event.target?.result as string;
         const lines = csv.split('\n');
-        const headers = lines[0].split(',');
-        
+
         for (let i = 1; i < lines.length; i++) {
           const values = lines[i].split(',');
           if (values.length >= 4) {
