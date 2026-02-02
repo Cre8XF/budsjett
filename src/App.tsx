@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FinanceProvider } from './context/FinanceContext';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { TransactionForm } from './components/TransactionForm';
@@ -42,10 +43,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-      {renderContent()}
-    </div>
+    <FinanceProvider>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+        {renderContent()}
+      </div>
+    </FinanceProvider>
   );
 }
 

@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { Edit3, Check, X } from 'lucide-react';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
+import { formatCurrency } from '../utils/format';
 
 export const BudgetOverview: React.FC = () => {
-  const { budgets, updateBudget } = useFinanceData();
+  const { budgets, updateBudget } = useFinance();
   const [editingBudget, setEditingBudget] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<number>(0);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('no-NO', {
-      style: 'currency',
-      currency: 'NOK'
-    }).format(amount);
-  };
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 90) return 'bg-red-500';
@@ -42,7 +36,7 @@ export const BudgetOverview: React.FC = () => {
       
       <div className="space-y-4">
         {budgets.map((budget) => {
-          const percentage = Math.min((budget.spent / budget.limit) * 100, 100);
+          const percentage = budget.limit > 0 ? Math.min((budget.spent / budget.limit) * 100, 100) : 0;
           const isEditing = editingBudget === budget.category;
           
           return (

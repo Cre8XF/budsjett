@@ -1,23 +1,17 @@
 import React from 'react';
 import { PiggyBank, TrendingUp, Target, AlertTriangle } from 'lucide-react';
-import { useFinanceData } from '../hooks/useFinanceData';
+import { useFinance } from '../context/FinanceContext';
+import { formatCurrency } from '../utils/format';
 import { ExpenseChart } from './ExpenseChart';
 import { BudgetOverview } from './BudgetOverview';
 import { SavingsGoals } from './SavingsGoals';
 import { RecentTransactions } from './RecentTransactions';
 
 export const Dashboard: React.FC = () => {
-  const { totalIncome, totalExpenses, totalSavings, monthlyProjection, budgets } = useFinanceData();
+  const { totalIncome, totalExpenses, totalSavings, monthlyProjection, budgets } = useFinance();
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('no-NO', {
-      style: 'currency',
-      currency: 'NOK'
-    }).format(amount);
-  };
-
-  const budgetWarnings = budgets.filter(budget => 
-    budget.spent / budget.limit > 0.8
+  const budgetWarnings = budgets.filter(budget =>
+    budget.limit > 0 && budget.spent / budget.limit > 0.8
   );
 
   return (
